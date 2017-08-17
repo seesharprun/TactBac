@@ -1,2 +1,0 @@
-# TactBac
-TactBac Mobile Service
