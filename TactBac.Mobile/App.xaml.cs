@@ -13,13 +13,13 @@ namespace TactBac.Mobile
         {
             InitializeComponent();
 
-            NavigationService.NavigateAsync("NavigationPage/MainPage");
+            NavigationService.NavigateAsync($"{nameof(NavigationPage)}/{nameof(HomePage)}");
         }
 
         protected override void RegisterTypes()
         {
-            Container.RegisterTypeForNavigation<NavigationPage>();
-            Container.RegisterTypeForNavigation<MainPage>();
+            Container.RegisterTypeForNavigation<NavigationPage>(nameof(NavigationPage));
+            Container.RegisterTypeForNavigation<MainPage>(nameof(HomePage));
         }
     }
 }
