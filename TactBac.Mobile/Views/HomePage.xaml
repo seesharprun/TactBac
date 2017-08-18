@@ -1,8 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TactBac.Mobile.Views.HomePage">
-    <StackLayout>
-        <Label Text="Welcome to Xamarin Forms!" />
-    </StackLayout>
+             xmlns:l="clr-namespace:TactBac.Mobile"
+             xmlns:p="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             x:Class="TactBac.Mobile.Views.HomePage"
+             ControlTemplate="{StaticResource PaddedPageBigLogoTemplate}"
+             IsBusy="{Binding IsLoading}"
+             p:ViewModelLocator.AutowireViewModel="True"             
+             Title="Welcome to TactBac!">
+    <Grid>
+        <Button IsVisible="{Binding StartButtonEnabled}" IsEnabled="{Binding StartButtonEnabled}" Command="{Binding StartCommand}" Text="{x:Static l:StringResources.HomePage_StartButton_Text}" HorizontalOptions="Center" VerticalOptions="Center" />
+    </Grid>
 </ContentPage>

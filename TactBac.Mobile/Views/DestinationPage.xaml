@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:l="clr-namespace:TactBac.Mobile"
+             xmlns:p="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             x:Class="TactBac.Mobile.Views.DestinationPage"
+             ControlTemplate="{StaticResource PaddedPageSmallLogoTemplate}"
+             IsBusy="{Binding IsLoading}"
+             p:ViewModelLocator.AutowireViewModel="True"  
+             Title="Export Destination">
+    <StackLayout>
+        <Label Margin="10,20" Text="{x:Static l:StringResources.DestinationPage_HeaderLabel_Text}" Style="{DynamicResource CaptionStyle}" />
+        <Entry Text="{Binding ProvidedEmailAddress}" VerticalOptions="StartAndExpand" />
+        <Button Command="{Binding ConfirmEmailCommand}" Text="Send Data" HorizontalOptions="End" />
+    </StackLayout>
+</ContentPage>

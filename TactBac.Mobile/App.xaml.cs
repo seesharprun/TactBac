@@ -19,7 +19,11 @@ namespace TactBac.Mobile
         protected override void RegisterTypes()
         {
             Container.RegisterTypeForNavigation<NavigationPage>(nameof(NavigationPage));
-            Container.RegisterTypeForNavigation<MainPage>(nameof(HomePage));
+            Container.RegisterTypeForNavigation<HomePage>(nameof(HomePage));
+            Container.RegisterTypeForNavigation<ListPage>(nameof(ListPage));
+            Container.RegisterTypeForNavigation<FormatPage>(nameof(FormatPage));
+            Container.RegisterTypeForNavigation<DestinationPage>(nameof(DestinationPage));
+            Container.RegisterTypeForNavigation<ConfirmationPage>(nameof(ConfirmationPage));
         }
     }
 }

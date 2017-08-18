@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:l="clr-namespace:TactBac.Mobile"
+             xmlns:p="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             x:Class="TactBac.Mobile.Views.ListPage"
+             ControlTemplate="{StaticResource PaddedPageSmallLogoTemplate}"
+             IsBusy="{Binding IsLoading}"
+             p:ViewModelLocator.AutowireViewModel="True"  
+             Title="Your Contacts">
+    <StackLayout>
+        <Label Margin="10,20" Text="{x:Static l:StringResources.ListPage_HeaderLabel_Text}" Style="{DynamicResource CaptionStyle}" />
+        <ListView ItemsSource="{Binding Contacts}" RefreshCommand="{Binding RefreshContactsCommand}" IsRefreshing="{Binding IsRefreshing}" IsPullToRefreshEnabled="True" VerticalOptions="EndAndExpand">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <Label Text="{Binding DisplayName}" Style="{DynamicResource SubtitleStyle}" />
+                            <Label Text="{Binding EmailAddress}" Style="{DynamicResource ListItemDetailTextStyle}" HorizontalOptions="EndAndExpand" />
+                            <Switch IsToggled="{Binding Selected}" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button Command="{Binding ConfirmContactsCommand}" Text="Export Contacts" HorizontalOptions="End" />
+    </StackLayout>
+</ContentPage>

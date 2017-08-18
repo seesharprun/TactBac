@@ -1,8 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<prism:PrismApplication xmlns="http://xamarin.com/schemas/2014/forms"
+<p:PrismApplication xmlns="http://xamarin.com/schemas/2014/forms"
                         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                        xmlns:prism="clr-namespace:Prism.Unity;assembly=Prism.Unity.Forms"
+                        xmlns:l="clr-namespace:TactBac.Mobile"
+                        xmlns:u="clr-namespace:TactBac.Mobile.Utilities"
+                        xmlns:p="clr-namespace:Prism.Unity;assembly=Prism.Unity.Forms"
                         x:Class="TactBac.Mobile.App">
-    <prism:PrismApplication.Resources>        
-    </prism:PrismApplication.Resources>
-</prism:PrismApplication>
+    <p:PrismApplication.Resources>
+        <ResourceDictionary>
+            <ControlTemplate x:Key="PaddedPageBigLogoTemplate">               
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.025*" />
+                        <RowDefinition Height="0.200*" />
+                        <RowDefinition Height="0.750*" />
+                        <RowDefinition Height="0.025*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.025*" />
+                        <ColumnDefinition Width="0.950*" />
+                        <ColumnDefinition Width="0.025*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{u:ImageResourceExtension TactBac.Mobile.Media.LargeLogo.png}" Grid.Row="1" Grid.Column="1" Aspect="AspectFit" />
+                    <ActivityIndicator IsVisible="{TemplateBinding IsBusy}" IsRunning="{TemplateBinding IsBusy}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3" Color="#D1E751" VerticalOptions="Center" HorizontalOptions="Center" />
+                    <Frame IsVisible="{TemplateBinding IsBusy}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3" BackgroundColor="Gray" Opacity="0.25" />
+                    <ContentPresenter Grid.Row="2" Grid.Column="1" />
+                </Grid>
+            </ControlTemplate>
+            <ControlTemplate x:Key="PaddedPageSmallLogoTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.025*" />
+                        <RowDefinition Height="0.100*" />
+                        <RowDefinition Height="0.850*" />
+                        <RowDefinition Height="0.025*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.025*" />
+                        <ColumnDefinition Width="0.950*" />
+                        <ColumnDefinition Width="0.025*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{u:ImageResourceExtension TactBac.Mobile.Media.SmallLogo.png}" Grid.Row="1" Grid.Column="1" Aspect="AspectFit" />
+                    <ActivityIndicator IsVisible="{TemplateBinding IsBusy}" IsRunning="{TemplateBinding IsBusy}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3" Color="#D1E751" VerticalOptions="Center" HorizontalOptions="Center" />
+                    <Frame IsVisible="{TemplateBinding IsBusy}" Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3" BackgroundColor="Gray" Opacity="0.25" />
+                    <ContentPresenter Grid.Row="2" Grid.Column="1" />
+                </Grid>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </p:PrismApplication.Resources>
+</p:PrismApplication>
