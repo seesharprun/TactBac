@@ -10,14 +10,16 @@
              Title="Your Contacts">
     <StackLayout>
         <Label Margin="10,20" Text="{x:Static l:StringResources.ListPage_HeaderLabel_Text}" Style="{DynamicResource CaptionStyle}" />
-        <ListView ItemsSource="{Binding Contacts}" RefreshCommand="{Binding RefreshContactsCommand}" IsRefreshing="{Binding IsRefreshing}" IsPullToRefreshEnabled="True" VerticalOptions="EndAndExpand">
+        <ListView ItemsSource="{Binding Contacts}" RefreshCommand="{Binding RefreshContactsCommand}" IsRefreshing="{Binding IsRefreshing}" IsPullToRefreshEnabled="True" VerticalOptions="EndAndExpand" HasUnevenRows="True">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Orientation="Horizontal">
-                            <Label Text="{Binding DisplayName}" Style="{DynamicResource SubtitleStyle}" />
-                            <Label Text="{Binding EmailAddress}" Style="{DynamicResource ListItemDetailTextStyle}" HorizontalOptions="EndAndExpand" />
-                            <Switch IsToggled="{Binding Selected}" />
+                            <StackLayout Orientation="Vertical">
+                                <Label Text="{Binding DisplayName}" Style="{DynamicResource ListItemTextStyle}" />
+                                <Label Text="{Binding EmailAddress}" Style="{DynamicResource ListItemDetailTextStyle}" />
+                            </StackLayout>
+                            <Switch IsToggled="{Binding Selected}" HorizontalOptions="EndAndExpand" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

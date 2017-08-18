@@ -33,7 +33,8 @@ namespace TactBac.Mobile.ViewModels
                 return new List<string>
                 {
                     "JSON",
-                    "CSV"
+                    "CSV",
+                    "XML"
                 };
             }
         }

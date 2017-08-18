@@ -14,7 +14,7 @@ using TactBac.Mobile.Services;
 
 namespace TactBac.Mobile.Droid
 {
-    [Activity(Label = "TactBac.Mobile", Icon = "@drawable/icon", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "TactBac.Mobile", Icon = "@drawable/icon", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         private IEventAggregator _eventAggregator;
