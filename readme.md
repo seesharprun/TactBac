@@ -2,6 +2,6 @@
 
 **Download TactBac from your app store today:**
 
-<a href="https://play.google.com/store/search?q=tactbac&c=apps" target="_blank">
+<a href="https://play.google.com/store/apps/details?id=com.tactbac" target="_blank">
   <img src="media/play-button.png" height="80" />
 </a>
