@@ -10,7 +10,7 @@
              Title="Export Destination">
     <StackLayout>
         <Label Margin="10,20" Text="{x:Static l:StringResources.DestinationPage_HeaderLabel_Text}" Style="{DynamicResource CaptionStyle}" />
-        <Entry Text="{Binding ProvidedEmailAddress}" VerticalOptions="StartAndExpand" />
+        <Entry Text="{Binding ProvidedEmailAddress}" VerticalOptions="StartAndExpand" Keyboard="Email" />
         <Button Command="{Binding ConfirmEmailCommand}" Text="Send Data" HorizontalOptions="End" />
     </StackLayout>
 </ContentPage>

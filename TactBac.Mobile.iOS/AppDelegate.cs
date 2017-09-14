@@ -1,7 +1,9 @@
-﻿using Foundation;
+﻿using Contacts;
+using Foundation;
 using Microsoft.Practices.Unity;
 using Prism.Events;
 using Prism.Unity;
+using System;
 using TactBac.Mobile.Events;
 using TactBac.Mobile.iOS.Services;
 using TactBac.Mobile.Services;
@@ -22,11 +24,41 @@ namespace TactBac.Mobile.iOS
 
             var container = application.Container;
             _eventAggregator = container.Resolve<IEventAggregator>();
-            _eventAggregator.GetEvent<StartButtonStatus>().Publish(true);
-
+            _eventAggregator.GetEvent<StartButtonStatus>().Publish(false);
+            
             LoadApplication(application);
 
             return base.FinishedLaunching(app, options);
+        }
+
+        public override void OnActivated(UIApplication uiApplication)
+        {
+            base.OnActivated(uiApplication);
+
+            using (var store = new CNContactStore())
+            {
+                store.RequestAccess(CNEntityType.Contacts, OnRequestPermissionsResult);
+            }
+        }
+
+        public void OnRequestPermissionsResult(bool granted, NSError error)
+        {
+            if (granted)
+            {
+                _eventAggregator.GetEvent<StartButtonStatus>().Publish(true);
+            }
+            else
+            {
+                this.BeginInvokeOnMainThread(() =>
+                {
+                    new UIAlertView(
+                        "Contact Permissions", 
+                        "Contact permissions are required to use this app. To enable this permission: close this app, open the Settings app, select the Privacy option, select the Contacts option, and then enable the Contacts permission for the TactBac app.", 
+                        default(IUIAlertViewDelegate), 
+                        "Ok"
+                    ).Show();
+                });
+            }
         }
     }
 

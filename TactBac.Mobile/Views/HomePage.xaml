@@ -9,6 +9,6 @@
              p:ViewModelLocator.AutowireViewModel="True"             
              Title="Welcome to TactBac!">
     <Grid>
-        <Button IsVisible="{Binding StartButtonEnabled}" IsEnabled="{Binding StartButtonEnabled}" Command="{Binding StartCommand}" Text="{x:Static l:StringResources.HomePage_StartButton_Text}" HorizontalOptions="Center" VerticalOptions="Center" />
+        <Button FontSize="Large" IsVisible="{Binding StartButtonEnabled}" IsEnabled="{Binding StartButtonEnabled}" Command="{Binding StartCommand}" Text="{x:Static l:StringResources.HomePage_StartButton_Text}" HorizontalOptions="Center" VerticalOptions="Center" />
     </Grid>
 </ContentPage>
