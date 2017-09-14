@@ -36,4 +36,4 @@ This privacy policy applies only to our online activities and is valid for visit
 
 By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.
 
-This privacy policy was created at [privacypolicygenerator.info](https://privacypolicygenerator.info).
+> This privacy policy was created at [privacypolicygenerator.info](https://privacypolicygenerator.info).
