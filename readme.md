@@ -5,3 +5,5 @@
 <a href="https://play.google.com/store/apps/details?id=com.tactbac" target="_blank">
   <img src="media/play-button.png" height="80" />
 </a>
+
+[Privacy Policy](/privacy.md)
