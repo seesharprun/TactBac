@@ -1,7 +1,10 @@
 using CsvHelper;
 using CsvHelper.Configuration;
+using Markdig;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -9,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using TactBac.Processing.Function.Models;
 
@@ -18,71 +23,125 @@ namespace TactBac.Processing.Function
     {
         [FunctionName("RequestProcessor")]
         public static async void Run(
-            [QueueTrigger("messages")]Payload payload,
+            [QueueTrigger("messages")]Request request,
             TraceWriter log
         )
         {
-            log.Info($"C# Queue trigger function processed a queue message: {payload.Id}.");
+            log.Info($"[{request.Id}] Dequeued conversion request.");
+            
+            Payload payload = await GetPayload(request);
 
-            string apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY", EnvironmentVariableTarget.Process);
+            string emailApiKey = Environment.GetEnvironmentVariable("SendGridApiKey", EnvironmentVariableTarget.Process);
 
-            var client = new SendGridClient(apiKey);
+            var client = new SendGridClient(emailApiKey);
 
+            Dictionary<string, string> attachments = new Dictionary<string, string>();
+
+            foreach(Format format in payload.Formats)
+            {
+                attachments.Add(
+                    format.ToString(),
+                    await GetAttachmentLink(
+                        CreateContentString(format, payload.Contacts),
+                        GenerateFilename(request.Id, format.ToString().ToLower())
+                    )
+                );
+            }
+            
             var message = MailHelper.CreateSingleEmailToMultipleRecipients(
                 new EmailAddress("auto@tactbac.com", "TactBac Automated Email"),
                 payload.Email.Select(e => new EmailAddress { Email = e }).ToList(),
                 "Your Contacts Export",
-                "Test e-mail message",
-                "<h1>Test e-mail message</h1>"
+                BuildPlainTextResponse(attachments),
+                BuildHtmlResponse(attachments)
             );
 
-            if (payload.Formats.Contains("CSV"))
-            {
-                string csvContent = CreateCSVString(payload.Contacts);
-                message.AddAttachment("export.csv", Base64Encode(csvContent));
-            }
-            if (payload.Formats.Contains("JSON"))
-            {
-                string jsonContent = CreateJSONString(payload.Contacts);
-                message.AddAttachment("export.json", Base64Encode(jsonContent));
-            }
-            if (payload.Formats.Contains("XML"))
-            {
-                string xmlContent = CreateXMLString(payload.Contacts);
-                message.AddAttachment("export.xml", Base64Encode(xmlContent));
-            }
-
             await client.SendEmailAsync(message);
+
+            log.Info($"[{request.Id}] E-mail message sent.");
         }
 
-        private static string CreateCSVString(IEnumerable<Contact> contacts)
+        private static CloudBlobClient GetClient()
         {
-            string csv = String.Empty;
-            using (StringWriter stringWriter = new StringWriter())
+            string storageConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage", EnvironmentVariableTarget.Process);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+
+            return storageAccount.CreateCloudBlobClient();
+        }
+
+        private static async Task<Payload> GetPayload(Request request)
+        {
+            CloudBlobClient blobClient = GetClient();
+
+            CloudBlobContainer container = blobClient.GetContainerReference("requests");
+            await container.CreateIfNotExistsAsync();
+
+            string filename = request.FileLocation;
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(filename);
+            string payloadJsonString = await blockBlob.DownloadTextAsync();
+
+            Payload payload = JsonConvert.DeserializeObject<Payload>(payloadJsonString);
+
+            await blockBlob.DeleteIfExistsAsync();
+
+            return payload;
+        }
+
+        private static async Task<string> GetAttachmentLink(string content, string filename)
+        {
+            CloudBlobClient blobClient = GetClient();
+
+            CloudBlobContainer container = blobClient.GetContainerReference("attachments");
+            
+            if (await container.CreateIfNotExistsAsync())
             {
-                var csvWriter = new CsvWriter(stringWriter);
-                csvWriter.Configuration.RegisterClassMap<ContactMap>();
-                csvWriter.WriteRecords(contacts);
-                csv = stringWriter.ToString();
+                await container.SetPermissionsAsync(
+                    new BlobContainerPermissions
+                    {
+                        PublicAccess = BlobContainerPublicAccessType.Blob
+                    }
+                );
             }
-            return csv;
+
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(filename);
+            await blockBlob.UploadTextAsync(content);
+
+            return blockBlob.Uri.AbsoluteUri;
         }
 
-        private static string CreateJSONString(IEnumerable<Contact> contacts)
+        private static string CreateContentString(Format format, IEnumerable<Contact> contacts)
         {
-            return JsonConvert.SerializeObject(contacts);
-        }
-
-        private static string CreateXMLString(IEnumerable<Contact> contacts)
-        {
-            string xml = String.Empty;
-            using (StringWriter stringWriter = new StringWriter())
+            if (format == Format.CSV)
             {
-                var xmlSerializer = new XmlSerializer(typeof(List<Contact>));
-                xmlSerializer.Serialize(stringWriter, contacts);
-                xml = stringWriter.ToString();
+                string csv = String.Empty;
+                using (StringWriter stringWriter = new StringWriter())
+                {
+                    var csvWriter = new CsvWriter(stringWriter);
+                    csvWriter.Configuration.RegisterClassMap<ContactMap>();
+                    csvWriter.WriteRecords(contacts);
+                    csv = stringWriter.ToString();
+                }
+                return csv;
             }
-            return xml;
+            else if (format == Format.XML)
+            {
+                string xml = String.Empty;
+                using (StringWriter stringWriter = new StringWriter())
+                {
+                    var xmlSerializer = new XmlSerializer(typeof(List<Contact>));
+                    xmlSerializer.Serialize(stringWriter, contacts);
+                    xml = stringWriter.ToString();
+                }
+                return xml;
+            }
+            else if (format == Format.JSON)
+            {
+                return JsonConvert.SerializeObject(contacts);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(format));
+            }
         }
 
         private sealed class ContactMap : CsvClassMap<Contact>
@@ -94,10 +153,37 @@ namespace TactBac.Processing.Function
             }
         }
 
-        private static string Base64Encode(string plainText)
+        private static string GenerateFilename(Guid requestId, string extension)
         {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
+            return $"{requestId.ToString().Replace("-", String.Empty).ToLower()}-{DateTimeOffset.UtcNow.ToFileTime()}.{extension}";
+        }
+
+        private static string BuildHtmlResponse(Dictionary<string, string> attachments)
+        {
+            string headerString = File.ReadAllText(@"Templates/email.header.md");
+            string footerString = File.ReadAllText(@"Templates/email.footer.md");
+
+            StringBuilder builder = new StringBuilder();
+
+            builder.AppendLine(headerString);
+            builder.AppendLine(String.Join(Environment.NewLine, attachments.Select(a => $"- [{a.Key} Export]({a.Value})")));
+            builder.AppendLine(footerString);
+
+            return Markdown.ToHtml(builder.ToString());
+        }
+
+        private static string BuildPlainTextResponse(Dictionary<string, string> attachments)
+        {
+            string headerString = File.ReadAllText(@"Templates/email.header.txt");
+            string footerString = File.ReadAllText(@"Templates/email.footer.txt");
+
+            StringBuilder builder = new StringBuilder();
+
+            builder.AppendLine(headerString);
+            builder.AppendLine(String.Join(Environment.NewLine, attachments.Select(a => $"- {a.Key} Export: {a.Value}")));
+            builder.AppendLine(footerString);
+
+            return Markdown.ToHtml(builder.ToString());
         }
     }
 }

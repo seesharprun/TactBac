@@ -2,10 +2,31 @@
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Templates\email.footer.md" />
+    <None Remove="Templates\email.footer.txt" />
+    <None Remove="Templates\email.header.md" />
+    <None Remove="Templates\email.header.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\email.footer.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\email.footer.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\email.header.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\email.header.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>    
     <PackageReference Include="CsvHelper" Version="2.16.3" />    
+    <PackageReference Include="Markdig" Version="0.14.7" />    
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.1" />    
-    <PackageReference Include="Sendgrid" Version="9.8.0" />    
+    <PackageReference Include="Sendgrid" Version="9.9.0" />    
     <PackageReference Include="WindowsAzure.Storage" Version="8.3.0" />
   </ItemGroup>
   <ItemGroup>
