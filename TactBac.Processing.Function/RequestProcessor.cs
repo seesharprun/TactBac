@@ -160,30 +160,41 @@ namespace TactBac.Processing.Function
 
         private static string BuildHtmlResponse(Dictionary<string, string> attachments)
         {
-            string headerString = File.ReadAllText(@"Templates/email.header.md");
-            string footerString = File.ReadAllText(@"Templates/email.footer.md");
-
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine(headerString);
+            builder.AppendLine("# TactBac Export Complete");
+            builder.AppendLine("**Thank you for using [TactBac](http://tactbac.com/).** Links to your exported contact files are included below. Please tell your friends about our app!");
+            builder.AppendLine();
             builder.AppendLine(String.Join(Environment.NewLine, attachments.Select(a => $"- [{a.Key} Export]({a.Value})")));
-            builder.AppendLine(footerString);
+            builder.AppendLine();
+            builder.AppendLine("---");
+            builder.AppendLine();
+            builder.AppendLine("*The team at TactBac*");
+            builder.AppendLine();
+            builder.AppendLine("- [TactBac on iTunes](https://itunes.apple.com/us/app/tactbac/id1282805236)");
+            builder.AppendLine("- [TactBac on Google Play](https://play.google.com/store/apps/details?id=com.tactbac)");
 
             return Markdown.ToHtml(builder.ToString());
         }
 
         private static string BuildPlainTextResponse(Dictionary<string, string> attachments)
         {
-            string headerString = File.ReadAllText(@"Templates/email.header.txt");
-            string footerString = File.ReadAllText(@"Templates/email.footer.txt");
-
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine(headerString);
+            builder.AppendLine("TactBac Export Complete");
+            builder.AppendLine();
+            builder.AppendLine("Thank you for using TactBac(http://tactbac.com/). Links to your exported contact files are included below. Please tell your friends about our app!");
+            builder.AppendLine();
             builder.AppendLine(String.Join(Environment.NewLine, attachments.Select(a => $"- {a.Key} Export: {a.Value}")));
-            builder.AppendLine(footerString);
+            builder.AppendLine();
+            builder.AppendLine("Thanks,");
+            builder.AppendLine();
+            builder.AppendLine("The team at TactBac");
+            builder.AppendLine();
+            builder.AppendLine("TactBac on iTunes: https://itunes.apple.com/us/app/tactbac/id1282805236");
+            builder.AppendLine("TactBac on Google Play: https://play.google.com/store/apps/details?id=com.tactbac");
 
-            return Markdown.ToHtml(builder.ToString());
+            return builder.ToString();
         }
     }
 }
